@@ -2,9 +2,21 @@ from typing import Callable, Any
 
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support.wait import WebDriverWait
 
-driver = ...
+from selenium import webdriver
+
+from selenium.webdriver.support.wait import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
+
+#from selenium.webdriver import ChromeOptions
+
+#options = ChromeOptions()
+
+driver = webdriver.Chrome(
+    executable_path=ChromeDriverManager().install(),
+    #options=options
+)
+
 
 wait = WebDriverWait(
     driver,
@@ -22,7 +34,7 @@ class empty_value_in_element:
         return driver.find_element(self.selector).get_attribute('value') == ''
 
 
-class element_exact_text():
+class element_exact_text:
 
     def __init__(self, selector, value):
         self.selector = selector
@@ -44,7 +56,7 @@ class element_attribute:
                    .get_attribute(self.name) == self.value
 
 
-class element_command_passed():
+class element_command_passed:
     def __init__(self, selector, command: Callable[[WebElement], Any]):
         self.selector = selector
         self.command = command
@@ -59,14 +71,14 @@ class Element:
 
     def should_be_blank(self):
         return self.should_have_exact_text('')\
-            .should_have_attribute('value', '')
+            .should_have_attribute('')
 
     def should_have_exact_text(self, value):
-        wait.until(element_exact_text(self.selector, value))
+        wait.until(self, element_exact_text(value))
         return self
 
     def should_have_attribute(self, name, value):
-        wait.until(element_attribute(self.selector, name, value))
+        wait.until(self, element_attribute(name, value))
         return self
 
     def set_value(self):
